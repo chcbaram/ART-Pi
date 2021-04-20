@@ -21,6 +21,7 @@ extern "C" {
 #include "button.h"
 #include "qspi.h"
 #include "flash.h"
+#include "sdram.h"
 
 
 void hwInit(void);
