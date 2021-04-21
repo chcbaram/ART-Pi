@@ -25,9 +25,13 @@ void hwInit(void)
   logPrintf("[ Firmware Begin... ]\r\n");
   logPrintf("Booting..Clock\t\t: %d Mhz\r\n", (int)HAL_RCC_GetSysClockFreq()/1000000);
 
+  gpioInit();
   buttonInit();
 
   sdramInit();
   qspiInit();
   flashInit();
+
+  sdInit();
+  fatfsInit();
 }

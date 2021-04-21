@@ -22,6 +22,9 @@ extern "C" {
 #include "qspi.h"
 #include "flash.h"
 #include "sdram.h"
+#include "gpio.h"
+#include "sd.h"
+#include "fatfs.h"
 
 
 void hwInit(void);
