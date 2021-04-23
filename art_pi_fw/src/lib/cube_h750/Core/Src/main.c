@@ -20,6 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "dma2d.h"
+#include "ltdc.h"
 #include "quadspi.h"
 #include "sdmmc.h"
 #include "usart.h"
@@ -105,6 +107,8 @@ int main(void)
   MX_QUADSPI_Init();
   MX_FMC_Init();
   MX_SDMMC1_SD_Init();
+  MX_LTDC_Init();
+  MX_DMA2D_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -177,8 +181,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_SDMMC
-                              |RCC_PERIPHCLK_QSPI|RCC_PERIPHCLK_FMC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_UART4
+                              |RCC_PERIPHCLK_SDMMC|RCC_PERIPHCLK_QSPI
+                              |RCC_PERIPHCLK_FMC;
   PeriphClkInitStruct.PLL2.PLL2M = 8;
   PeriphClkInitStruct.PLL2.PLL2N = 128;
   PeriphClkInitStruct.PLL2.PLL2P = 2;
@@ -187,6 +192,14 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_1;
   PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
   PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+  PeriphClkInitStruct.PLL3.PLL3M = 32;
+  PeriphClkInitStruct.PLL3.PLL3N = 156;
+  PeriphClkInitStruct.PLL3.PLL3P = 2;
+  PeriphClkInitStruct.PLL3.PLL3Q = 2;
+  PeriphClkInitStruct.PLL3.PLL3R = 4;
+  PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_3;
+  PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
+  PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
   PeriphClkInitStruct.FmcClockSelection = RCC_FMCCLKSOURCE_D1HCLK;
   PeriphClkInitStruct.QspiClockSelection = RCC_QSPICLKSOURCE_D1HCLK;
   PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL2;

@@ -40,8 +40,12 @@
 #define      HW_SDRAM_MEM_SIZE      (32*1024*1024)
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         1
+#define      HW_GPIO_MAX_CH         2
 
+#define _USE_HW_LCD
+#define _USE_HW_LTDC
+#define      HW_LCD_WIDTH           800
+#define      HW_LCD_HEIGHT          480
 
 
 #define _PIN_GPIO_SDCARD_DETECT     0

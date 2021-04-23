@@ -1,7 +1,7 @@
 /*
  * lcd.h
  *
- *  Created on: 2020. 12. 27.
+ *  Created on: Dec 5, 2020
  *      Author: baram
  */
 
@@ -14,13 +14,13 @@
 
 #ifdef _USE_HW_LCD
 
-#ifdef HW_LCD_LVGL
-#include "lvgl/lvgl.h"
-#endif
-
 #define LCD_WIDTH         HW_LCD_WIDTH
 #define LCD_HEIGHT        HW_LCD_HEIGHT
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define GETR(c) (((uint16_t)(c)) >> 11)
 #define GETG(c) (((c) & 0x07E0)>>5)
@@ -28,8 +28,9 @@
 #define RGB2COLOR(r, g, b) ((((r>>3)<<11) | ((g>>2)<<5) | (b>>3)))
 
 
-enum class_color
-{
+
+#if 1
+enum class_color {
  white     = 0xFFFF,
  gray      = 0x8410,
  darkgray  = 0xAD55,
@@ -47,16 +48,40 @@ enum class_color
  blue      = 0x001F,
  lightblue = 0xAEDC,
 };
+#else
+enum class_color {
+ white     = 0xFFFF,
+ gray      = 0x1084,
+ darkgray  = 0x55AD,
+ black     = 0x0000,
+ purple    = 0x1080,
+ pink      = 0x19FE,
+ red       = 0x00F8,
+ orange    = 0x20FD,
+ brown     = 0x45A1,
+ beige     = 0xBBF7,
+ yellow    = 0xE0FF,
+ lightgreen= 0x7297,
+ green     = 0xE007,
+ darkblue  = 0x1100,
+ blue      = 0x1F00,
+ lightblue = 0xDCAE,
+};
+#endif
 
+typedef struct lcd_driver_t_ lcd_driver_t;
 
-typedef enum
+typedef struct lcd_driver_t_
 {
-  LCD_FONT_07x10,
-  LCD_FONT_11x18,
-  LCD_FONT_16x26,
-  LCD_FONT_HAN,
-  LCD_FONT_MAX
-} LcdFont;
+  bool     (*init)(void);
+  bool     (*reset)(void);
+  void     (*setWindow)(int32_t x, int32_t y, int32_t w, int32_t h);
+  uint16_t (*getWidth)(void);
+  uint16_t (*getHeight)(void);
+  bool     (*setCallBack)(void (*p_func)(void));
+  bool     (*sendBuffer)(uint8_t *p_data, uint32_t length, uint32_t timeout_ms);
+
+} lcd_driver_t;
 
 
 typedef enum
@@ -75,27 +100,17 @@ typedef enum
   LCD_RESIZE_BILINEAR
 } LcdResizeMode;
 
-
-typedef struct lcd_driver_t_ lcd_driver_t;
-
-typedef struct lcd_driver_t_
+typedef struct
 {
-  bool     (*init)(void);
-  bool     (*reset)(void);
-  void     (*setWindow)(int32_t x, int32_t y, int32_t w, int32_t h);
-  uint16_t (*getWidth)(void);
-  uint16_t (*getHeight)(void);
-  bool     (*setCallBack)(void (*p_func)(void));
-  bool     (*sendBuffer)(uint8_t *p_data, uint32_t length, uint32_t timeout_ms);
+  int16_t x;
+  int16_t y;
+  int16_t w;
+  int16_t h;
+} lcd_rect_t;
 
-} lcd_driver_t;
-
-
-#ifdef HW_LCD_LVGL
-#define LCD_IMAGE_DEF(var_name) extern lcd_img_t var_name;
-#endif
 
 bool lcdInit(void);
+bool lcdDeInit(void);
 bool lcdIsInit(void);
 void lcdReset(void);
 
@@ -140,14 +155,17 @@ void lcdDrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3,
 void lcdDrawFillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, uint32_t color);
 void lcdDrawString(int x, int y, uint16_t color, const char *str);
 void lcdPrintf(int x, int y, uint16_t color,  const char *fmt, ...);
-void lcdSetFont(LcdFont font);
-LcdFont lcdGetFont(void);
-void lcdPrintfResize(int x, int y, uint16_t color,  float ratio_h, const char *fmt, ...);
+void lcdPrintfResize(int x, int y, uint16_t color,  float ratio, const char *fmt, ...);
+void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio, uint16_t align, const char *fmt, ...);
+uint32_t lcdGetStrWidth(const char *fmt, ...);
+
 void lcdSetResizeMode(LcdResizeMode mode);
 
-#ifdef HW_LCD_LVGL
-void lcdDrawImage(int16_t x, int16_t y, lcd_img_t *p_img);
+
+#ifdef __cplusplus
+ }
 #endif
+
 
 #endif /* _USE_HW_LCD */
 

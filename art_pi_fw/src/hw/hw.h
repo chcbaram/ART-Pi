@@ -25,6 +25,8 @@ extern "C" {
 #include "gpio.h"
 #include "sd.h"
 #include "fatfs.h"
+#include "ltdc.h"
+#include "lcd.h"
 
 
 void hwInit(void);

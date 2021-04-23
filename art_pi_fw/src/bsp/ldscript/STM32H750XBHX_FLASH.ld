@@ -49,6 +49,8 @@ MEMORY
   RAM_D3     (xrw)    : ORIGIN = 0x38000000,   LENGTH = 64K
   
   QSPI_FLASH (rx)     : ORIGIN = 0x90000000,   LENGTH = 16M
+  
+  SDRAM_LCD  (xrw)    : ORIGIN = 0xC0000000,   LENGTH = 4M
 }
 
 /* Sections */
@@ -190,6 +192,7 @@ SECTIONS
     . = ALIGN(4);       
   } >RAM_D3 AT> FLASH     
   
+  /*
   .ex_flash_tag :
   {
     . = ALIGN(4);      
@@ -197,7 +200,15 @@ SECTIONS
     KEEP(*(.ex_flash_tag*))   
     . = ALIGN(4);       
   } > QSPI_FLASH    
+  */
   
+  .lcd_buf(NOLOAD) :
+  {
+    . = ALIGN(4);      
+    *(.lcd_buf)
+    *(.lcd_buf*)   
+    . = ALIGN(4);       
+  } >SDRAM_LCD
   
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }

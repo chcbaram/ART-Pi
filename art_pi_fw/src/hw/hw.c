@@ -35,5 +35,6 @@ void hwInit(void)
   sdInit();
   fatfsInit();
 
-  qspiEnableMemoryMappedMode();
+
+  lcdInit();
 }
