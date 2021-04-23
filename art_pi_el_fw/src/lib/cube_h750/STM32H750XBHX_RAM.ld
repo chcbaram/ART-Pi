@@ -40,29 +40,26 @@ _Min_Stack_Size = 0x400;	/* required amount of stack */
 /* Memories definition */
 MEMORY
 {
-  FLASH      (rx)     : ORIGIN = 0x08000000,   LENGTH = 128K
-  
   DTCMRAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 128K
   ITCMRAM    (xrw)    : ORIGIN = 0x00000000,   LENGTH = 64K
-  RAM_D1     (xrw)    : ORIGIN = 0x24000000,   LENGTH = 512K
-  RAM_D2     (xrw)    : ORIGIN = 0x30000000,   LENGTH = 288K
-  RAM_D3     (xrw)    : ORIGIN = 0x38000000,   LENGTH = 64K
-  
-  QSPI_FLASH (rx)     : ORIGIN = 0x90000000,   LENGTH = 16M
+  RAM_D1    (xrw)    : ORIGIN = 0x24000000,   LENGTH = 512K
+  RAM_D2    (xrw)    : ORIGIN = 0x30000000,   LENGTH = 288K
+  RAM_D3    (xrw)    : ORIGIN = 0x38000000,   LENGTH = 64K
+  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 128K
 }
 
 /* Sections */
 SECTIONS
 {
-  /* The startup code into "FLASH" Rom type memory */
+  /* The startup code into "RAM_D1" Ram type memory */
   .isr_vector :
   {
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
 
-  /* The program code and other data into "FLASH" Rom type memory */
+  /* The program code and other data into "RAM_D1" Ram type memory */
   .text :
   {
     . = ALIGN(4);
@@ -77,22 +74,22 @@ SECTIONS
 
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
-  } >FLASH
+  } >RAM_D1
 
-  /* Constant data into "FLASH" Rom type memory */
+  /* Constant data into "RAM_D1" Ram type memory */
   .rodata :
   {
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
 
   .ARM.extab   : { 
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
   
   .ARM : {
     . = ALIGN(4);
@@ -100,7 +97,7 @@ SECTIONS
     *(.ARM.exidx*)
     __exidx_end = .;
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
 
   .preinit_array     :
   {
@@ -109,7 +106,7 @@ SECTIONS
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
   
   .init_array :
   {
@@ -119,7 +116,7 @@ SECTIONS
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
   
   .fini_array :
   {
@@ -129,7 +126,7 @@ SECTIONS
     KEEP (*(.fini_array*))
     PROVIDE_HIDDEN (__fini_array_end = .);
     . = ALIGN(4);
-  } >FLASH
+  } >RAM_D1
 
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
@@ -145,7 +142,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
     
-  } >RAM_D1 AT> FLASH
+  } >RAM_D1
 
   /* Uninitialized data section into "RAM_D1" Ram type memory */
   . = ALIGN(4);
@@ -181,23 +178,6 @@ SECTIONS
     libm.a ( * )
     libgcc.a ( * )
   }
-  
-  .non_cache :
-  {
-    . = ALIGN(4);      
-    *(.non_cache)
-    *(.non_cache*)   
-    . = ALIGN(4);       
-  } >RAM_D3 AT> FLASH     
-  
-  .ex_flash_tag :
-  {
-    . = ALIGN(4);      
-    KEEP(*(.ex_flash_tag))
-    KEEP(*(.ex_flash_tag*))   
-    . = ALIGN(4);       
-  } > QSPI_FLASH    
-  
-  
+
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }

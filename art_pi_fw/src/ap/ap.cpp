@@ -11,6 +11,7 @@
 #include "ap.h"
 
 
+__attribute__((section(".ex_flash_tag"))) const char ex_flash_str[256] = "This is test.";
 
 
 void apInit(void)
