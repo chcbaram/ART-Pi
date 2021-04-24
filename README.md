@@ -1,5 +1,7 @@
 # ART-Pi STM32H750
 
+![ex_screenshot](./assets/board.jpg)
+
 * ## 개발환경 
   * STM32CubeIDE 1.5.0
     * https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html
