@@ -628,27 +628,6 @@ void cliI2C(cli_args_t *args)
       ret = false;
     }
   }
-  else if (args->argc == 1 && args->isStr(0, "test"))
-  {
-    pre_time = millis();
-    uint8_t tx_buf[16];
-
-
-    tx_buf[0] = 0x80;
-    tx_buf[1] = 0x41;
-    tx_buf[2] = 0x00;
-    tx_buf[3] = 0x00;
-    tx_buf[4] = 0x00;
-
-    i2c_ret = i2cWriteData(0, 0x5D, tx_buf, 5, 100);
-
-    tx_buf[0] = 0x80;
-    tx_buf[1] = 0x40;
-    tx_buf[2] = 0x00;
-
-    i2c_ret = i2cWriteData(0, 0x5D, tx_buf, 3, 100);
-
-  }
   else
   {
     ret = false;

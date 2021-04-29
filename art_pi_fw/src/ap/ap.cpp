@@ -84,6 +84,21 @@ void apMain(void)
       x %= lcdGetWidth();
       y %= lcdGetHeight();
 
+
+      uint8_t touch_cnt;
+
+      touch_cnt = touchGetTouchedCount();
+      if (touch_cnt > 0)
+      {
+        touch_data_t data;
+
+        for (int i=0; i<touch_cnt; i++)
+        {
+          touchGetTouchedData(i, &data);
+          lcdDrawFillRect(data.x-50, data.y-50, 100, 100, green);
+        }
+      }
+
       lcdRequestDraw();
     }
 

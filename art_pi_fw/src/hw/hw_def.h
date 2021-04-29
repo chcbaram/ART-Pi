@@ -18,6 +18,8 @@
 #define _USE_HW_QSPI
 #define _USE_HW_FLASH
 #define _USE_HW_FATFS
+#define _USE_HW_TOUCH
+#define _USE_HW_GT9147
 
 
 #define _USE_HW_LED
