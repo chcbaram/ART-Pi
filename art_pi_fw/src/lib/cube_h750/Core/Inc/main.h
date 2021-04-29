@@ -63,8 +63,12 @@ void Error_Handler(void);
 #define SDCARD_CD_GPIO_Port GPIOD
 #define LCD_BL_Pin GPIO_PIN_4
 #define LCD_BL_GPIO_Port GPIOD
+#define TS_RST_Pin GPIO_PIN_3
+#define TS_RST_GPIO_Port GPIOD
 #define LED_R_Pin GPIO_PIN_15
 #define LED_R_GPIO_Port GPIOC
+#define TS_INT_Pin GPIO_PIN_12
+#define TS_INT_GPIO_Port GPIOG
 #define LED_B_Pin GPIO_PIN_8
 #define LED_B_GPIO_Port GPIOI
 #define BUTTON_Pin GPIO_PIN_4

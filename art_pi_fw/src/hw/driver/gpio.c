@@ -25,8 +25,10 @@ typedef struct
 
 const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
     {
-        {GPIOD, GPIO_PIN_5, _DEF_INPUT_PULLUP, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 0. SDCARD_CD
-        {GPIOD, GPIO_PIN_4, _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW},       // 1. LCD_BL
+        {GPIOD, GPIO_PIN_5,  _DEF_INPUT_PULLUP, GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 0. SDCARD_CD
+        {GPIOD, GPIO_PIN_4,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW },      // 1. LCD_BL
+        {GPIOD, GPIO_PIN_3,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 2. TS_RST
+        {GPIOG, GPIO_PIN_12, _DEF_INPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 3. TS_INT
     };
 
 
@@ -43,6 +45,7 @@ bool gpioInit(void)
 
 
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
 
   for (int i=0; i<GPIO_MAX_CH; i++)
   {

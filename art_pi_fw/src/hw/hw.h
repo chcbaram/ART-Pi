@@ -27,6 +27,7 @@ extern "C" {
 #include "fatfs.h"
 #include "ltdc.h"
 #include "lcd.h"
+#include "i2c.h"
 
 
 void hwInit(void);

@@ -26,6 +26,7 @@ void hwInit(void)
   logPrintf("Booting..Clock\t\t: %d Mhz\r\n", (int)HAL_RCC_GetSysClockFreq()/1000000);
 
   gpioInit();
+  i2cInit();
   buttonInit();
 
   sdramInit();

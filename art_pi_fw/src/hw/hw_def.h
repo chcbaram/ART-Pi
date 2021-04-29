@@ -26,6 +26,9 @@
 #define _USE_HW_UART
 #define      HW_UART_MAX_CH         1
 
+#define _USE_HW_I2C
+#define      HW_I2C_MAX_CH          1
+
 #define _USE_HW_CLI
 #define      HW_CLI_CMD_LIST_MAX    24
 #define      HW_CLI_CMD_NAME_MAX    16
@@ -40,7 +43,7 @@
 #define      HW_SDRAM_MEM_SIZE      (32*1024*1024)
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         2
+#define      HW_GPIO_MAX_CH         4
 
 #define _USE_HW_LCD
 #define _USE_HW_LTDC
