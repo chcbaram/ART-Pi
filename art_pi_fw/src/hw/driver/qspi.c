@@ -182,7 +182,7 @@ bool qspiEraseBlock(uint32_t block_addr)
 
 bool qspiErase(uint32_t addr, uint32_t length)
 {
-  bool ret;
+  bool ret = true;
   uint32_t flash_length;
   uint32_t block_size;
   uint32_t block_begin;

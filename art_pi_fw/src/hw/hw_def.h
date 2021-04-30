@@ -14,12 +14,28 @@
 
 
 
+#define _HW_DEF_RTOS_MEM_SIZE(x)              ((x)/4)
+
+
+#define _HW_DEF_RTOS_THREAD_PRI_MAIN          osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_CLI           osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_LED           osPriorityNormal
+
+
+#define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 6*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_CLI           _HW_DEF_RTOS_MEM_SIZE( 6*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_LED           _HW_DEF_RTOS_MEM_SIZE(    256)
+
+
+
+
 #define _USE_HW_SD
 #define _USE_HW_QSPI
 #define _USE_HW_FLASH
 #define _USE_HW_FATFS
 #define _USE_HW_TOUCH
 #define _USE_HW_GT9147
+#define _USE_HW_RTOS
 
 
 #define _USE_HW_LED
@@ -51,6 +67,12 @@
 #define _USE_HW_LTDC
 #define      HW_LCD_WIDTH           800
 #define      HW_LCD_HEIGHT          480
+
+#define _USE_HW_LOG
+#define      HW_LOG_CH              _DEF_UART1
+
+
+
 
 
 #define _PIN_GPIO_SDCARD_DETECT     0

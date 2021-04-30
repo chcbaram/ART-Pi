@@ -11,11 +11,26 @@
 #include "ap.h"
 
 
+static void cliThread(void const *argument);
+static void cliInfo(cli_args_t *args);
 
 
 void apInit(void)
 {
   cliOpen(_DEF_UART1, 57600);
+
+  cliAdd("info", cliInfo);
+
+
+  osThreadDef(cliThread, cliThread, _HW_DEF_RTOS_THREAD_PRI_CLI, 0, _HW_DEF_RTOS_THREAD_MEM_CLI);
+  if (osThreadCreate(osThread(cliThread), NULL) != NULL)
+  {
+    logPrintf("cliThread \t\t: OK\r\n");
+  }
+  else
+  {
+    logPrintf("cliThread \t\t: Fail\r\n");
+  }
 }
 
 void apMain(void)
@@ -103,10 +118,6 @@ void apMain(void)
     }
 
 
-    cliMain();
-
-
-
     sd_state_t sd_state;
 
     sd_state = sdUpdate();
@@ -118,5 +129,45 @@ void apMain(void)
     {
       logPrintf("\nSDCARD_DISCONNECTED\n");
     }
+
+    delay(1);
+  }
+}
+
+void cliThread(void const *argument)
+{
+  (void)argument;
+
+
+  while(1)
+  {
+    cliMain();
+    delay(5);
+  }
+}
+
+
+
+
+
+void cliInfo(cli_args_t *args)
+{
+  bool ret = false;
+
+
+  if (args->argc == 1 && args->isStr(0, "cpu"))
+  {
+    while(cliKeepLoop())
+    {
+      cliPrintf("cpu usage : %d %%\r", osGetCPUUsage());
+      delay(100);
+    }
+    ret = true;
+  }
+
+
+  if (ret == false)
+  {
+    cliPrintf("info cpu\n");
   }
 }

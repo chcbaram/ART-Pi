@@ -34,7 +34,7 @@ typedef struct
   int32_t  (*getData)(uint8_t index);
   float    (*getFloat)(uint8_t index);
   char    *(*getStr)(uint8_t index);
-  bool     (*isStr)(uint8_t index, char *p_str);
+  bool     (*isStr)(uint8_t index, const char *p_str);
 } cli_args_t;
 
 

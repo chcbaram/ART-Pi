@@ -29,6 +29,7 @@ extern "C" {
 #include "lcd.h"
 #include "i2c.h"
 #include "touch.h"
+#include "log.h"
 
 
 void hwInit(void);

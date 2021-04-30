@@ -19,15 +19,18 @@ extern "C" {
 
 #define _USE_LOG_PRINT    1
 
+#if 0
 #if _USE_LOG_PRINT
 #define logPrintf(fmt, ...)     printf(fmt, ##__VA_ARGS__)
 #else
 #define logPrintf(fmt, ...)
 #endif
-
+#else
+void logPrintf(const char *fmt, ...);
+#endif
 
 #include "stm32h7xx_hal.h"
-
+#include "rtos.h"
 
 
 void bspInit(void);

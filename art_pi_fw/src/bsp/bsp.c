@@ -28,6 +28,8 @@ void bspInit(void)
   SCB_EnableDCache();
 
   mpuConfig();
+
+  rtosInit();
 }
 
 void delay(uint32_t ms)

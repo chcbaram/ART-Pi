@@ -22,6 +22,10 @@ static void cliI2C(cli_args_t *args);
 #endif
 
 
+#define LOCK_BEGIN(x) osMutexWait(mutex_lock[x], osWaitForever)
+#define LOCK_END(x)   osMutexRelease(mutex_lock[x])
+
+
 
 static uint32_t i2c_timeout[I2C_MAX_CH];
 static uint32_t i2c_errcount[I2C_MAX_CH];
@@ -29,6 +33,10 @@ static uint32_t i2c_freq[I2C_MAX_CH];
 
 static bool is_init = false;
 static bool is_begin[I2C_MAX_CH];
+
+static osMutexId mutex_lock[I2C_MAX_CH];
+static const osMutexDef_t mutex_lock_def[I2C_MAX_CH];
+
 
 
 I2C_HandleTypeDef hi2c1;
@@ -64,6 +72,8 @@ bool i2cInit(void)
     i2c_timeout[i] = 10;
     i2c_errcount[i] = 0;
     is_begin[i] = false;
+
+    mutex_lock[i] = osMutexCreate(&mutex_lock_def[i]);
   }
 
 #ifdef _USE_HW_CLI
@@ -184,12 +194,13 @@ bool i2cIsDeviceReady(uint8_t ch, uint8_t dev_addr)
 {
   I2C_HandleTypeDef *p_handle = i2c_tbl[ch].p_hi2c;
 
-
+  osMutexWait(mutex_lock[ch], osWaitForever);
   if (HAL_I2C_IsDeviceReady(p_handle, dev_addr << 1, 10, 10) == HAL_OK)
   {
     __enable_irq();
     return true;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return false;
 }
@@ -221,6 +232,7 @@ bool i2cReadBytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_d
     return false;
   }
 
+  osMutexWait(mutex_lock[ch], osWaitForever);
   i2c_ret = HAL_I2C_Mem_Read(p_handle, (uint16_t)(dev_addr << 1), reg_addr, I2C_MEMADD_SIZE_8BIT, p_data, length, timeout);
 
   if( i2c_ret == HAL_OK )
@@ -231,6 +243,7 @@ bool i2cReadBytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_d
   {
     ret = false;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return ret;
 }
@@ -251,6 +264,7 @@ bool i2cRead16Bytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p
     return false;
   }
 
+  osMutexWait(mutex_lock[ch], osWaitForever);
   i2c_ret = HAL_I2C_Mem_Read(p_handle, (uint16_t)(dev_addr << 1), reg_addr, I2C_MEMADD_SIZE_16BIT, p_data, length, timeout);
 
   if( i2c_ret == HAL_OK )
@@ -261,6 +275,7 @@ bool i2cRead16Bytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p
   {
     ret = false;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return ret;
 }
@@ -276,6 +291,7 @@ bool i2cReadData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t length
     return false;
   }
 
+  osMutexWait(mutex_lock[ch], osWaitForever);
   i2c_ret = HAL_I2C_Master_Receive(p_handle, (uint16_t)(dev_addr << 1), p_data, length, timeout);
 
   if( i2c_ret == HAL_OK )
@@ -286,6 +302,7 @@ bool i2cReadData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t length
   {
     ret = false;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return ret;
 }
@@ -306,6 +323,7 @@ bool i2cWriteBytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_
     return false;
   }
 
+  osMutexWait(mutex_lock[ch], osWaitForever);
   i2c_ret = HAL_I2C_Mem_Write(p_handle, (uint16_t)(dev_addr << 1), reg_addr, I2C_MEMADD_SIZE_8BIT, p_data, length, timeout);
 
   if(i2c_ret == HAL_OK)
@@ -316,6 +334,7 @@ bool i2cWriteBytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_
   {
     ret = false;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return ret;
 }
@@ -336,6 +355,7 @@ bool i2cWrite16Bytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *
     return false;
   }
 
+  osMutexWait(mutex_lock[ch], osWaitForever);
   i2c_ret = HAL_I2C_Mem_Write(p_handle, (uint16_t)(dev_addr << 1), reg_addr, I2C_MEMADD_SIZE_16BIT, p_data, length, timeout);
 
   if(i2c_ret == HAL_OK)
@@ -346,6 +366,7 @@ bool i2cWrite16Bytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *
   {
     ret = false;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return ret;
 }
@@ -361,7 +382,7 @@ bool i2cWriteData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t lengt
     return false;
   }
 
-
+  osMutexWait(mutex_lock[ch], osWaitForever);
   i2c_ret = HAL_I2C_Master_Transmit(p_handle, (uint16_t)(dev_addr << 1), p_data, length, timeout);
 
   if(i2c_ret == HAL_OK)
@@ -372,6 +393,7 @@ bool i2cWriteData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t lengt
   {
     ret = false;
   }
+  osMutexRelease(mutex_lock[ch]);
 
   return ret;
 }

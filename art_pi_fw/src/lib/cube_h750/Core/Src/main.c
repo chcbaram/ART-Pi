@@ -25,6 +25,7 @@
 #include "ltdc.h"
 #include "quadspi.h"
 #include "sdmmc.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 #include "fmc.h"
@@ -111,6 +112,7 @@ int main(void)
   MX_LTDC_Init();
   MX_DMA2D_Init();
   MX_I2C1_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
