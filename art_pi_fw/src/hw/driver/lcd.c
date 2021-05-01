@@ -50,6 +50,7 @@ static volatile uint32_t fps_count = 0;
 static volatile uint32_t draw_fps = 30;
 static volatile uint32_t draw_frame_time = 0;
 
+static void (*available_callback)(void) = NULL;
 
 extern uint16_t *ltdc_draw_buffer;
 //static uint16_t *p_draw_frame_buf = NULL;
@@ -77,6 +78,10 @@ void lcdTransferDoneISR(void)
   if (fps_time > 0)
   {
     fps_count = 1000 / fps_time;
+  }
+  if (available_callback != NULL)
+  {
+    available_callback();
   }
 }
 
@@ -144,6 +149,11 @@ bool lcdIsInit(void)
 
 void lcdReset(void)
 {
+}
+
+void lcdSetAvailableCallback(void (*func)(void))
+{
+  available_callback = func;
 }
 
 LCD_OPT_DEF uint32_t lcdReadPixel(uint16_t x_pos, uint16_t y_pos)

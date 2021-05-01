@@ -309,8 +309,6 @@ void ltdcSwapFrameBuffer(void)
 #if _USE_DOUBLE_BUFFER
   if (ltdc_request_draw == true)
   {
-    ltdc_request_draw = false;
-
     frame_index ^= 1;
 
     ltdcSetFrameBuffer(frame_buffer[frame_index]);
@@ -323,6 +321,7 @@ void ltdcSwapFrameBuffer(void)
     {
       ltdc_draw_buffer = frame_buffer[frame_index];
     }
+    ltdc_request_draw = false;
     lcdTransferDoneISR();
   }
 #else
@@ -354,9 +353,16 @@ void LTDC_IRQHandler(void)
 
 void HAL_LTDC_LineEvenCallback(LTDC_HandleTypeDef* hltdc)
 {
+  static uint8_t update = 0;
+
   if (LTDC->LIPCR == lcd_int_active_line)
   {
-    ltdcSwapFrameBuffer();
+    update ^= 1;
+
+    if (update == 1)
+    {
+      ltdcSwapFrameBuffer();
+    }
     HAL_LTDC_ProgramLineEvent(hltdc, lcd_int_active_line);
   }
   else

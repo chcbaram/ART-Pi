@@ -114,6 +114,8 @@ bool lcdDeInit(void);
 bool lcdIsInit(void);
 void lcdReset(void);
 
+void lcdSetAvailableCallback(void (*func)(void));
+
 uint8_t lcdGetBackLight(void);
 void    lcdSetBackLight(uint8_t value);
 

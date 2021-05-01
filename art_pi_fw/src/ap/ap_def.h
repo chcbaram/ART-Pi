@@ -1,0 +1,46 @@
+/*
+ * ap_def.h
+ *
+ *  Created on: 2021. 5. 1.
+ *      Author: baram
+ */
+
+#ifndef SRC_AP_AP_DEF_H_
+#define SRC_AP_AP_DEF_H_
+
+
+#include "hw.h"
+
+
+
+typedef struct thread_t_ threat_t;
+
+typedef struct thread_t_
+{
+  bool is_init;
+  bool is_start;
+
+  const char *name;
+  uint32_t freq;
+  uint32_t hearbeat;
+
+  threat_t *list;
+} thread_t;
+
+
+typedef enum
+{
+  THREAD_ID_DISPLAY,
+  THREAD_ID_INFO,
+  THREAD_ID_CLI,
+  THREAD_ID_MAX
+} ThreadId_t;
+
+
+
+
+
+
+
+
+#endif /* SRC_AP_AP_DEF_H_ */
