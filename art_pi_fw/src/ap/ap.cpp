@@ -37,11 +37,11 @@ void apMain(void)
     sd_state = sdUpdate();
     if (sd_state == SDCARD_CONNECTED)
     {
-      logPrintf("\nSDCARD_CONNECTED\n");
+      threadNotify(EVENT_SDCARD_CONNECTED);
     }
     if (sd_state == SDCARD_DISCONNECTED)
     {
-      logPrintf("\nSDCARD_DISCONNECTED\n");
+      threadNotify(EVENT_SDCARD_DISCONNECTED);
     }
 
     delay(10);

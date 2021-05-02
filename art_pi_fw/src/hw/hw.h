@@ -30,6 +30,7 @@ extern "C" {
 #include "i2c.h"
 #include "touch.h"
 #include "log.h"
+#include "image.h"
 
 
 void hwInit(void);

@@ -16,6 +16,7 @@ static thread_t *thread = NULL;
 
 
 static void infoThread(void const *argument);
+static bool infoEvent(Event_t event);
 static void cliInfo(cli_args_t *args);
 
 
@@ -29,6 +30,7 @@ bool infoThreadInit(thread_t *p_thread)
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->onEvent = infoEvent;
 
   cliAdd("info", cliInfo);
 
@@ -73,7 +75,27 @@ void infoThread(void const *argument)
   }
 }
 
+bool infoEvent(Event_t event)
+{
+  bool ret = true;
 
+  switch(event)
+  {
+    case EVENT_TOUCH_PRESSED:
+      logPrintf("EVENT_TOUCH_PRESSED : %s,%d\n", __FILE__, __LINE__);
+      break;
+
+    case EVENT_TOUCH_RELEASED:
+      logPrintf("EVENT_TOUCH_RELEASED : %s,%d\n", __FILE__, __LINE__);
+      break;
+
+    default:
+      ret = false;
+      break;
+  }
+
+  return ret;
+}
 
 
 

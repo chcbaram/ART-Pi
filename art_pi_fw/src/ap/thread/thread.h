@@ -14,6 +14,6 @@
 
 
 bool threadInit(void);
-
+bool threadNotify(Event_t event);
 
 #endif /* SRC_AP_THREAD_THREAD_H_ */

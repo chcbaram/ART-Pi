@@ -11,12 +11,15 @@
 #include "display.h"
 
 
+IMAGE_RES_DEF(image_test);
+
+
 static const char *thread_name = "display     ";
 static thread_t *thread = NULL;
-
+static bool is_sdcard = false;
 
 static void displayThread(void const *argument);
-
+static bool displayEvent(Event_t event);
 
 
 
@@ -28,7 +31,7 @@ bool displayThreadInit(thread_t *p_thread)
   thread = p_thread;
 
   thread->name = thread_name;
-
+  thread->onEvent = displayEvent;
 
   osThreadDef(displayThread, displayThread, _HW_DEF_RTOS_THREAD_PRI_DISPLAY, 0, _HW_DEF_RTOS_THREAD_MEM_DISPLAY);
   if (osThreadCreate(osThread(displayThread), NULL) != NULL)
@@ -56,9 +59,16 @@ void displayThread(void const *argument)
   uint32_t pre_time_draw;
   uint32_t draw_time = 0;
   float char_size = 1.0;
+  bool is_touch = false;
+  bool is_touch_pre = false;
+  image_t image1;
+  image_t image2;
 
   thread->is_start = true;
 
+
+  image1 = imageLoad(&image_test);
+  image2 = imageCreate(&image_test, 19, 13, 30, 28);
 
 
   pre_time = millis();
@@ -108,6 +118,9 @@ void displayThread(void const *argument)
       lcdDrawFillRect(lcdGetWidth()-x, 90+30*2, 30*2, 30*2, green);
       lcdDrawFillRect(x + 30, 90+30*4, 30*2, 30*2, blue);
 
+      imageDraw(&image1, x + 30, 90+30*5);
+      imageDraw(&image2, x + 30, 90+30*6);
+
       lcdDrawFillRect(x, 480-30, 30, 30, red);
 
       draw_time = millis()-pre_time_draw;
@@ -130,6 +143,30 @@ void displayThread(void const *argument)
           touchGetTouchedData(i, &data);
           lcdDrawFillRect(data.x-50, data.y-50, 100, 100, green);
         }
+        is_touch = true;
+      }
+      else
+      {
+        is_touch = false;
+      }
+
+      if (is_touch != is_touch_pre)
+      {
+        if (is_touch)
+        {
+          thread->notify(EVENT_TOUCH_PRESSED);
+        }
+        else
+        {
+          thread->notify(EVENT_TOUCH_RELEASED);
+        }
+      }
+
+      is_touch_pre = is_touch;
+
+      if (is_sdcard == true)
+      {
+        lcdPrintfRect(0, 0, LCD_WIDTH, 32, green, 2, LCD_ALIGN_H_RIGHT | LCD_ALIGN_V_TOP,  "[SD카드]");
       }
 
       thread->hearbeat++;
@@ -141,6 +178,30 @@ void displayThread(void const *argument)
 
 }
 
+bool displayEvent(Event_t event)
+{
+  bool ret = true;
+
+
+  switch(event)
+  {
+    case EVENT_SDCARD_CONNECTED:
+      logPrintf("EVENT_SDCARD_CONNECTED : %s,%d\n", __FILE__, __LINE__);
+      is_sdcard = true;
+      break;
+
+    case EVENT_SDCARD_DISCONNECTED:
+      logPrintf("EVENT_SDCARD_DISCONNECTED : %s,%d\n", __FILE__, __LINE__);
+      is_sdcard = false;
+      break;
+
+    default:
+      ret = false;
+      break;
+  }
+
+  return ret;
+}
 
 
 

@@ -17,6 +17,12 @@
 static const char *thread_name = "Dummy       ";
 
 static thread_t thread_list[THREAD_ID_MAX];
+static osMessageQId event_q;
+
+
+static void threadEvent(void const *argument);
+
+
 
 
 
@@ -34,6 +40,24 @@ bool threadInit(void)
 
     thread_list[i].freq = 0;
     thread_list[i].hearbeat = 0;
+
+    thread_list[i].notify = threadNotify;
+    thread_list[i].onEvent = NULL;
+  }
+
+
+  osMessageQDef(event_q, 16, uint32_t);
+  event_q = osMessageCreate(osMessageQ(event_q), NULL);
+
+  osThreadDef(threadEvent, threadEvent, _HW_DEF_RTOS_THREAD_PRI_EVENT, 0, _HW_DEF_RTOS_THREAD_MEM_EVENT);
+  if (osThreadCreate(osThread(threadEvent), NULL) != NULL)
+  {
+    ret = true;
+    logPrintf("threadEvent \t\t: OK\r\n");
+  }
+  else
+  {
+    logPrintf("threadEvent \t\t: Fail\r\n");
   }
 
   ret &= infoThreadInit(&thread_list[THREAD_ID_INFO]);
@@ -42,4 +66,39 @@ bool threadInit(void)
 
 
   return ret;
+}
+
+bool threadNotify(Event_t event)
+{
+  bool ret = true;
+  osStatus status;
+
+  status = osMessagePut(event_q, event, 10);
+  if (status != osOK)
+  {
+    ret = false;
+  }
+
+  return ret;
+}
+
+void threadEvent(void const *argument)
+{
+  (void)argument;
+  osEvent evt;
+
+  while(1)
+  {
+    evt = osMessageGet(event_q, 100);
+    if (evt.status == osEventMessage)
+    {
+      for (int i=0; i<THREAD_ID_MAX; i++)
+      {
+        if (thread_list[i].onEvent != NULL)
+        {
+          thread_list[i].onEvent((Event_t)evt.value.v);
+        }
+      }
+    }
+  }
 }

@@ -13,6 +13,16 @@
 
 
 
+typedef enum
+{
+  EVENT_SDCARD_CONNECTED,
+  EVENT_SDCARD_DISCONNECTED,
+  EVENT_TOUCH_PRESSED,
+  EVENT_TOUCH_RELEASED,
+} Event_t;
+
+
+
 typedef struct thread_t_ threat_t;
 
 typedef struct thread_t_
@@ -25,6 +35,12 @@ typedef struct thread_t_
   uint32_t hearbeat;
 
   threat_t *list;
+
+  bool (*notify)(Event_t event);
+
+
+  bool (*onEvent)(Event_t event);
+
 } thread_t;
 
 

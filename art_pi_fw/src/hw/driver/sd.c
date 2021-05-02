@@ -145,7 +145,8 @@ sd_state_t sdUpdate(void)
       {
         if (is_init)
         {
-          sd_state = SDCARD_CONNECTED;
+          sd_state  = SDCARD_CONNECTED;
+          ret_state = SDCARD_CONNECTED;
         }
         else
         {
