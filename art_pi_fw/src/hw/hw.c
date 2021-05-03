@@ -30,7 +30,7 @@ void hwInit(void)
   touchInit();
 
   sdramInit();
-  qspiInit();
+  //qspiInit();
   flashInit();
 
   sdInit();
