@@ -42,6 +42,7 @@
 #define _USE_HW_TOUCH
 #define _USE_HW_GT9147
 #define _USE_HW_RTOS
+#define _USE_HW_SPI_FLASH
 
 
 #define _USE_HW_LED
@@ -67,7 +68,7 @@
 #define      HW_SDRAM_MEM_SIZE      (32*1024*1024)
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         4
+#define      HW_GPIO_MAX_CH         5
 
 #define _USE_HW_LCD
 #define _USE_HW_LTDC
@@ -82,7 +83,7 @@
 
 
 #define _PIN_GPIO_SDCARD_DETECT     0
-
+#define _PIN_GPIO_SPI_FLASH_CS      4
 
 
 #endif /* SRC_HW_HW_DEF_H_ */

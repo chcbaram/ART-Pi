@@ -73,6 +73,8 @@ void Error_Handler(void);
 #define LED_B_GPIO_Port GPIOI
 #define BUTTON_Pin GPIO_PIN_4
 #define BUTTON_GPIO_Port GPIOH
+#define SP1_CS_Pin GPIO_PIN_4
+#define SP1_CS_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

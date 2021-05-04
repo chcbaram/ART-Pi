@@ -31,7 +31,9 @@ void hwInit(void)
 
   sdramInit();
   //qspiInit();
+  spiFlashInit();
   flashInit();
+
 
   sdInit();
   fatfsInit();

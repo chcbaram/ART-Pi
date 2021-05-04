@@ -31,6 +31,7 @@ extern "C" {
 #include "touch.h"
 #include "log.h"
 #include "image.h"
+#include "spi_flash.h"
 
 
 void hwInit(void);

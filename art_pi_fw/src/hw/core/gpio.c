@@ -29,6 +29,7 @@ const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
         {GPIOD, GPIO_PIN_4,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW },      // 1. LCD_BL
         {GPIOD, GPIO_PIN_3,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 2. TS_RST
         {GPIOG, GPIO_PIN_12, _DEF_INPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 3. TS_INT
+        {GPIOA, GPIO_PIN_4,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 4. SPI_FLASH_CS
     };
 
 
