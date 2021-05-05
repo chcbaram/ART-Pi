@@ -25,7 +25,7 @@
 #define _HW_DEF_RTOS_THREAD_PRI_EVENT         osPriorityNormal
 
 
-#define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 1*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CLI           _HW_DEF_RTOS_MEM_SIZE( 6*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_LED           _HW_DEF_RTOS_MEM_SIZE(    256)
 #define _HW_DEF_RTOS_THREAD_MEM_INFO          _HW_DEF_RTOS_MEM_SIZE(    512)
@@ -78,8 +78,8 @@
 #define _USE_HW_LOG
 #define      HW_LOG_CH              _DEF_UART1
 
-
-
+#define _USE_HW_FS
+#define      HW_FS_MAX_SIZE         4*1024*1024
 
 
 #define _PIN_GPIO_SDCARD_DETECT     0

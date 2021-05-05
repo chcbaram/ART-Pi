@@ -32,7 +32,7 @@ extern "C" {
 #include "log.h"
 #include "image.h"
 #include "spi_flash.h"
-
+#include "fs.h"
 
 void hwInit(void);
 

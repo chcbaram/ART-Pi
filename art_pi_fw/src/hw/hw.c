@@ -37,7 +37,9 @@ void hwInit(void)
 
   sdInit();
   fatfsInit();
-
+  fsInit();
 
   lcdInit();
+
+  logPrintf("\n");
 }
