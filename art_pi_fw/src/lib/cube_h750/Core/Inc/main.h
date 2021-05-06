@@ -71,6 +71,12 @@ void Error_Handler(void);
 #define TS_INT_GPIO_Port GPIOG
 #define LED_B_Pin GPIO_PIN_8
 #define LED_B_GPIO_Port GPIOI
+#define BT_WAKE_Pin GPIO_PIN_10
+#define BT_WAKE_GPIO_Port GPIOI
+#define BT_RST_N_Pin GPIO_PIN_11
+#define BT_RST_N_GPIO_Port GPIOI
+#define BT_HOST_WAKE_Pin GPIO_PIN_0
+#define BT_HOST_WAKE_GPIO_Port GPIOC
 #define BUTTON_Pin GPIO_PIN_4
 #define BUTTON_GPIO_Port GPIOH
 #define SP1_CS_Pin GPIO_PIN_4

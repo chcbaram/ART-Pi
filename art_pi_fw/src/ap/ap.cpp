@@ -13,9 +13,15 @@
 
 
 
+void cliTest(cli_args_t *args);
+
 
 void apInit(void)
 {
+  uartOpen(_DEF_UART2, 115200);
+
+  cliAdd("test", cliTest);
+
   threadInit();
 }
 
@@ -50,6 +56,45 @@ void apMain(void)
 
 
 
+
+
+void cliTest(cli_args_t *args)
+{
+  bool ret = false;
+
+
+  if (args->argc == 1 && args->isStr(0, "hci") == true)
+  {
+    uint32_t pre_time = 0;
+    uint8_t tx_buf[10];
+
+    tx_buf[0] = 0x01;
+    tx_buf[1] = 0x05;
+    tx_buf[2] = 0x14;
+    tx_buf[3] = 0;
+
+    while(cliKeepLoop())
+    {
+      if (millis()-pre_time >= 3000)
+      {
+        pre_time = millis();
+
+        uartWrite(_DEF_UART2, tx_buf, 4);
+        logPrintf("tx \n");
+      }
+
+      if (uartAvailable(_DEF_UART2) > 0)
+      {
+        logPrintf("rx : 0x%X\n", uartRead(_DEF_UART2));
+      }
+    }
+  }
+
+  if (ret == false)
+  {
+    cliPrintf("test hci\n");
+  }
+}
 
 
 

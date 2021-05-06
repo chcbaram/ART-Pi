@@ -115,6 +115,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM6_Init();
   MX_SPI1_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -187,10 +188,10 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_UART4
-                              |RCC_PERIPHCLK_SPI1|RCC_PERIPHCLK_SDMMC
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_QSPI
-                              |RCC_PERIPHCLK_FMC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_USART3
+                              |RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_SPI1
+                              |RCC_PERIPHCLK_SDMMC|RCC_PERIPHCLK_I2C1
+                              |RCC_PERIPHCLK_QSPI|RCC_PERIPHCLK_FMC;
   PeriphClkInitStruct.PLL2.PLL2M = 8;
   PeriphClkInitStruct.PLL2.PLL2N = 128;
   PeriphClkInitStruct.PLL2.PLL2P = 2;

@@ -30,6 +30,9 @@ const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
         {GPIOD, GPIO_PIN_3,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 2. TS_RST
         {GPIOG, GPIO_PIN_12, _DEF_INPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 3. TS_INT
         {GPIOA, GPIO_PIN_4,  _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 4. SPI_FLASH_CS
+        {GPIOI, GPIO_PIN_10, _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 5. BT_WAKE
+        {GPIOI, GPIO_PIN_11, _DEF_OUTPUT,       GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 6. BT_RST_N
+        {GPIOC, GPIO_PIN_0,  _DEF_INPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 7. BT_HOST_WAKE
     };
 
 
@@ -45,8 +48,12 @@ bool gpioInit(void)
   bool ret = true;
 
 
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
+
 
   for (int i=0; i<GPIO_MAX_CH; i++)
   {

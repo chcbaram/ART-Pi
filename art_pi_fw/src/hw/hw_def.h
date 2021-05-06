@@ -49,7 +49,7 @@
 #define      HW_LED_MAX_CH          2
 
 #define _USE_HW_UART
-#define      HW_UART_MAX_CH         1
+#define      HW_UART_MAX_CH         2
 
 #define _USE_HW_I2C
 #define      HW_I2C_MAX_CH          1
@@ -68,7 +68,7 @@
 #define      HW_SDRAM_MEM_SIZE      (32*1024*1024)
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         5
+#define      HW_GPIO_MAX_CH         8
 
 #define _USE_HW_LCD
 #define _USE_HW_LTDC
@@ -84,6 +84,9 @@
 
 #define _PIN_GPIO_SDCARD_DETECT     0
 #define _PIN_GPIO_SPI_FLASH_CS      4
+#define _PIN_GPIO_BT_WAKE           5
+#define _PIN_GPIO_BT_RST_N          6
+#define _PIN_GPIO_BT_HOST_WAKE      7
 
 
 #endif /* SRC_HW_HW_DEF_H_ */
