@@ -50,7 +50,8 @@ void apMain(void)
       threadNotify(EVENT_SDCARD_DISCONNECTED);
     }
 
-    delay(10);
+    btSppExcute();
+    delay(1);
   }
 }
 

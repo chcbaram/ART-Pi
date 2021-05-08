@@ -40,6 +40,7 @@ void hwInit(void)
   fsInit();
 
   lcdInit();
+  btSppInit();
 
   logPrintf("\n");
 }

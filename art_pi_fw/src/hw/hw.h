@@ -33,6 +33,8 @@ extern "C" {
 #include "image.h"
 #include "spi_flash.h"
 #include "fs.h"
+#include "bt_spp.h"
+
 
 void hwInit(void);
 
