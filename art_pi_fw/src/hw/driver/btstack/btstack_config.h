@@ -16,7 +16,7 @@
 // BTstack features that can be enabled
 #define ENABLE_CLASSIC
 #define ENABLE_PRINTF_HEXDUMP
-#define ENABLE_LOG_INFO
+//#define ENABLE_LOG_INFO
 
 
 // BTstack configuration. buffers, sizes, ...

@@ -49,8 +49,6 @@ void apMain(void)
     {
       threadNotify(EVENT_SDCARD_DISCONNECTED);
     }
-
-    btSppExcute();
     delay(1);
   }
 }
@@ -89,11 +87,30 @@ void cliTest(cli_args_t *args)
         logPrintf("rx : 0x%X\n", uartRead(_DEF_UART2));
       }
     }
+
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "bt_spp") == true)
+  {
+    while(cliKeepLoop())
+    {
+      if (uartAvailable(_DEF_UART3) > 0)
+      {
+        uint8_t rx_data;
+
+        rx_data = uartRead(_DEF_UART3);
+
+        uartPrintf(_DEF_UART3, "RxData : 0x%X(%c)\n", rx_data, rx_data);
+      }
+    }
+    ret = true;
   }
 
   if (ret == false)
   {
     cliPrintf("test hci\n");
+    cliPrintf("test bt_spp\n");
   }
 }
 

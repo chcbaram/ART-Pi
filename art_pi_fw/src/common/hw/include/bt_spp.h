@@ -16,7 +16,13 @@ extern "C" {
 
 
 bool btSppInit(void);
+bool btSppIsOpen(void);
 bool btSppExcute(void);
+
+uint32_t btSppAvailable(void);
+uint8_t  btSppRead(void);
+uint32_t btSppWrite(uint8_t *p_data, uint32_t length);
+
 
 #ifdef __cplusplus
 }

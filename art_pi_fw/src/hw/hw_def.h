@@ -23,6 +23,7 @@
 #define _HW_DEF_RTOS_THREAD_PRI_INFO          osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_DISPLAY       osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_EVENT         osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_BTSTACK       osPriorityNormal
 
 
 #define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
@@ -31,6 +32,7 @@
 #define _HW_DEF_RTOS_THREAD_MEM_INFO          _HW_DEF_RTOS_MEM_SIZE(    512)
 #define _HW_DEF_RTOS_THREAD_MEM_DISPLAY       _HW_DEF_RTOS_MEM_SIZE( 6*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_EVENT         _HW_DEF_RTOS_MEM_SIZE( 2*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_BTSTACK       _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 
 
 
@@ -49,7 +51,7 @@
 #define      HW_LED_MAX_CH          2
 
 #define _USE_HW_UART
-#define      HW_UART_MAX_CH         2
+#define      HW_UART_MAX_CH         3
 
 #define _USE_HW_I2C
 #define      HW_I2C_MAX_CH          1

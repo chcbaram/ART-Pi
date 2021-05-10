@@ -17,6 +17,7 @@ IMAGE_RES_DEF(image_test);
 static const char *thread_name = "display     ";
 static thread_t *thread = NULL;
 static bool is_sdcard = false;
+static bool is_bt = false;
 
 static void displayThread(void const *argument);
 static bool displayEvent(Event_t event);
@@ -168,6 +169,10 @@ void displayThread(void const *argument)
       {
         lcdPrintfRect(0, 0, LCD_WIDTH, 32, green, 2, LCD_ALIGN_H_RIGHT | LCD_ALIGN_V_TOP,  "[SD카드]");
       }
+      if (is_bt == true)
+      {
+        lcdPrintfRect(0, 32, LCD_WIDTH, 32, green, 2, LCD_ALIGN_H_RIGHT | LCD_ALIGN_V_TOP,  "[BT_SPP]");
+      }
 
       thread->hearbeat++;
 
@@ -193,6 +198,16 @@ bool displayEvent(Event_t event)
     case EVENT_SDCARD_DISCONNECTED:
       logPrintf("EVENT_SDCARD_DISCONNECTED : %s,%d\n", __FILE__, __LINE__);
       is_sdcard = false;
+      break;
+
+    case EVENT_BT_OPEN:
+      logPrintf("EVENT_BT_OPEN : %s,%d\n", __FILE__, __LINE__);
+      is_bt = true;
+      break;
+
+    case EVENT_BT_CLOSE:
+      logPrintf("EVENT_BT_CLOSE : %s,%d\n", __FILE__, __LINE__);
+      is_bt = false;
       break;
 
     default:

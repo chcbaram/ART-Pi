@@ -11,7 +11,7 @@
 #include "uart.h"
 #include "cdc.h"
 #include "qbuffer.h"
-
+#include "bt_spp.h"
 
 #ifdef _USE_HW_UART
 
@@ -20,11 +20,19 @@
 #define UART_RX_BUF_LENGTH      1024
 
 
+typedef enum
+{
+  UART_HW_TYPE_STM32,
+  UART_HW_TYPE_USB,
+  UART_HW_TYPE_BT_SPP,
+} UartHwType_t;
+
 
 typedef struct
 {
   bool     is_open;
   uint32_t baud;
+  UartHwType_t type;
 
 
   uint8_t  rx_buf[UART_RX_BUF_LENGTH];
@@ -66,6 +74,8 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   {
 
     case _DEF_UART1:
+      uart_tbl[ch].type      = UART_HW_TYPE_STM32;
+      uart_tbl[ch].baud      = baud;
       uart_tbl[ch].p_huart   = &huart4;
       uart_tbl[ch].p_hdma_rx = &hdma_uart4_rx;
 
@@ -107,6 +117,8 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       break;
 
     case _DEF_UART2:
+      uart_tbl[ch].type      = UART_HW_TYPE_STM32;
+      uart_tbl[ch].baud      = baud;
       uart_tbl[ch].p_huart   = &huart3;
       uart_tbl[ch].p_hdma_rx = &hdma_usart3_rx;
 
@@ -147,6 +159,13 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       }
       break;
 
+    case _DEF_UART3:
+      uart_tbl[ch].type    = UART_HW_TYPE_BT_SPP;
+      uart_tbl[ch].baud      = baud;
+      uart_tbl[ch].is_open = true;
+
+      ret = true;
+      break;
   }
 
   return ret;
@@ -167,6 +186,10 @@ uint32_t uartAvailable(uint8_t ch)
     case _DEF_UART2:
       uart_tbl[ch].qbuffer.in = (uart_tbl[ch].qbuffer.len - ((DMA_Stream_TypeDef *)uart_tbl[ch].p_hdma_rx->Instance)->NDTR);
       ret = qbufferAvailable(&uart_tbl[ch].qbuffer);
+      break;
+
+    case _DEF_UART3:
+      ret = btSppAvailable();
       break;
   }
 
@@ -200,6 +223,10 @@ uint8_t uartRead(uint8_t ch)
     case _DEF_UART2:
       qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
       break;
+
+    case _DEF_UART3:
+      ret = btSppRead();
+      break;
   }
 
   return ret;
@@ -217,6 +244,10 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
       {
         ret = length;
       }
+      break;
+
+    case _DEF_UART3:
+      ret = btSppWrite(p_data, length);
       break;
   }
 
@@ -250,6 +281,7 @@ uint32_t uartGetBaud(uint8_t ch)
   {
     case _DEF_UART1:
     case _DEF_UART2:
+    case _DEF_UART3:
       ret = uart_tbl[ch].baud;
       break;
   }

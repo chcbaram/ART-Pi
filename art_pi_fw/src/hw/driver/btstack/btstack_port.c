@@ -1,17 +1,19 @@
 /*
- * bt_port.c
+ * btstack_port.c
  *
- *  Created on: 2021. 5. 8.
+ *  Created on: 2021. 5. 10.
  *      Author: baram
  */
 
 
 
-#include "bt_port.h"
-#include "uart.h"
 
+
+#include "btstack_port.h"
 #include "btstack.h"
 #include "btstack_run_loop_embedded.h"
+#include "btstack_chipset_bcm.h"
+#include "uart.h"
 
 
 static uint8_t uart_ch = _DEF_UART2;
@@ -34,13 +36,13 @@ static hci_transport_config_uart_t config =
   {
       HCI_TRANSPORT_CONFIG_UART,
       115200,
-      115200,
+      2000000,
       0, // flow control
       "ART-Pi",
   };
 
 
-void btPortInit(void)
+void btstackPortInit(void)
 {
   // setup BTstack memory pools
   btstack_memory_init();
@@ -48,19 +50,20 @@ void btPortInit(void)
   // select embedded run loop
   btstack_run_loop_init(btstack_run_loop_embedded_get_instance());
 
-  // use logger: format HCI_DUMP_PACKETLOGGER, HCI_DUMP_BLUEZ or HCI_DUMP_STDOUT
   //hci_dump_open(NULL, HCI_DUMP_STDOUT);
 
   // init HCI
   hci_transport_t  *transport = (hci_transport_t  *)hci_transport_h4_instance(btstack_uart_block_embedded_instance());
   hci_init(transport, &config);
+  hci_set_chipset(btstack_chipset_bcm_instance());
+  btstack_chipset_bcm_enable_init_script(false);
 
   // setup Link Key DB
   hci_set_link_key_db(btstack_link_key_db_memory_instance());
 }
 
 
-void btPortExecute(void)
+void btstackPortExecute(void)
 {
   int rx_avail;
   int num_rx_bytes;
@@ -180,7 +183,6 @@ void hal_uart_dma_set_block_sent(void (*block_handler)(void))
 int  hal_uart_dma_set_baud(uint32_t baud)
 {
   uartOpen(uart_ch, baud);
-  logPrintf("uartOpen : %d bps\n", baud);
   return 0;
 }
 
@@ -195,7 +197,3 @@ void hal_uart_dma_receive_block(uint8_t *buffer, uint16_t len)
   rx_buffer_ptr = buffer;
   bytes_to_read = len;
 }
-
-
-
-

@@ -12,6 +12,7 @@
 #include "common/info.h"
 #include "common/cli.h"
 #include "display/display.h"
+#include "bluetooth/btstack.h"
 
 
 static const char *thread_name = "Dummy       ";
@@ -63,6 +64,7 @@ bool threadInit(void)
   ret &= infoThreadInit(&thread_list[THREAD_ID_INFO]);
   ret &= cliThreadInit(&thread_list[THREAD_ID_CLI]);
   ret &= displayThreadInit(&thread_list[THREAD_ID_DISPLAY]);
+  ret &= btstackThreadInit(&thread_list[THREAD_ID_BTSTACK]);
 
 
   return ret;
