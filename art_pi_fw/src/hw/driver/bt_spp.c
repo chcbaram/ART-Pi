@@ -113,7 +113,7 @@ uint32_t btSppWrite(uint8_t *p_data, uint32_t length)
   }
 
   pre_time = millis();
-  while(pre_time < 100)
+  while(millis()-pre_time < 100)
   {
     tx_buf_len = (q_tx.len - qbufferAvailable(&q_tx)) - 1;
     if (tx_buf_len >= length)
@@ -201,6 +201,9 @@ void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uin
           } else {
               rfcomm_channel_id = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
               rfcomm_channel_mtu = rfcomm_event_channel_opened_get_max_frame_size(packet);
+
+              qbufferFlush(&q_rx);
+              qbufferFlush(&q_tx);
               is_open = true;
               printf("RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, rfcomm_channel_mtu);
           }
@@ -209,6 +212,8 @@ void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uin
         case RFCOMM_EVENT_CHANNEL_CLOSED:
           rfcomm_channel_id = 0;
           is_open = false;
+          qbufferFlush(&q_rx);
+          qbufferFlush(&q_tx);
           break;
 
         case RFCOMM_EVENT_CAN_SEND_NOW:
