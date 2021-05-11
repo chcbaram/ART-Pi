@@ -39,4 +39,7 @@
 #define MAX_SPP_CONNECTIONS         1
 
 
+#define NVM_NUM_LINK_KEYS           16
+
+
 #endif /* SRC_HW_DRIVER_BT_SPP_BTSTACK_CONFIG_H_ */

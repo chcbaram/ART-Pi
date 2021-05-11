@@ -18,7 +18,7 @@
 #include <string.h>
 
 #include "btstack.h"
-
+#include "btstack_tlv_lfs.h"
 
 #define HEARTBEAT_PERIOD_MS   500
 #define TEST_COD              0x1234
@@ -42,6 +42,15 @@ static uint8_t wr_buf[1024];
 
 static qbuffer_t q_rx;
 static qbuffer_t q_tx;
+
+
+#define TLV_DB_PATH_PREFIX "btstack_"
+#define TLV_DB_PATH_POSTFIX ".tlv"
+static char tlv_db_path[100];
+static const btstack_tlv_t * tlv_impl;
+static btstack_tlv_lfs_t     tlv_context;
+static bd_addr_t             local_addr;
+
 
 
 
@@ -162,6 +171,7 @@ void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uin
   UNUSED(channel);
 
   bd_addr_t event_addr;
+  bd_addr_t addr;
   uint8_t   rfcomm_channel_nr;
   uint32_t tx_len;
 
@@ -170,6 +180,24 @@ void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uin
     case HCI_EVENT_PACKET:
       switch (hci_event_packet_get_type(packet))
       {
+        case BTSTACK_EVENT_STATE:
+            if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING) break;
+            gap_local_bd_addr(addr);
+            printf("BTstack up and running at %s\n",  bd_addr_to_str(addr));
+            // setup TLV
+            strcpy(tlv_db_path, TLV_DB_PATH_PREFIX);
+            strcat(tlv_db_path, bd_addr_to_str(addr));
+            strcat(tlv_db_path, TLV_DB_PATH_POSTFIX);
+            tlv_impl = btstack_tlv_lfs_init_instance(&tlv_context, tlv_db_path);
+            btstack_tlv_set_instance(tlv_impl, &tlv_context);
+#ifdef ENABLE_CLASSIC
+            hci_set_link_key_db(btstack_link_key_db_tlv_get_instance(tlv_impl, &tlv_context));
+#endif
+#ifdef ENABLE_BLE
+            le_device_db_tlv_configure(tlv_impl, &tlv_context);
+#endif
+            break;
+
         case HCI_EVENT_COMMAND_COMPLETE:
           if (HCI_EVENT_IS_COMMAND_COMPLETE(packet, hci_read_bd_addr)){
               reverse_bd_addr(&packet[6], event_addr);

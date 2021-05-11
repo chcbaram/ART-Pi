@@ -22,9 +22,16 @@ extern "C" {
 #define FS_MAX_SIZE   HW_FS_MAX_SIZE
 
 
+#include "littlefs/lfs.h"
 
 typedef struct _fs_t fs_t;
 
+typedef struct _fs_t
+{
+  bool is_open;
+
+  lfs_file_t file;
+} fs_t;
 
 bool    fsInit(void);
 bool    fsIsInit(void);
@@ -36,7 +43,7 @@ int32_t fsFileRead(fs_t *p_fs, uint8_t *p_data, uint32_t length);
 int32_t fsFileWrite(fs_t *p_fs, uint8_t *p_data, uint32_t length);
 int32_t fsFileSize(fs_t *p_fs);
 int32_t fsFileSeek(fs_t *p_fs, uint32_t seek_pos);
-
+int32_t fsFileSync(fs_t *p_fs);
 #endif
 
 #ifdef __cplusplus

@@ -18,12 +18,7 @@
 
 
 
-typedef struct _fs_t
-{
-  bool is_open;
 
-  lfs_file_t file;
-} fs_t;
 
 
 static bool is_init = false;
@@ -344,6 +339,11 @@ int32_t fsFileWrite(fs_t *p_fs, uint8_t *p_data, uint32_t length)
   ret = lfs_file_write(&lfs, &p_fs->file, p_data, length);
 
   return ret;
+}
+
+int32_t fsFileSync(fs_t *p_fs)
+{
+  return lfs_file_sync(&lfs, &p_fs->file);
 }
 
 bool fsFileRewind(fs_t *p_fs)

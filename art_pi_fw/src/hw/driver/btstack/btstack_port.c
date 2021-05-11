@@ -41,9 +41,20 @@ static hci_transport_config_uart_t config =
       "ART-Pi",
   };
 
+static bd_addr_t addr = { 0xFF, 0xFF, 0x33, 0x44, 0x55, 0x66 };
+
 
 void btstackPortInit(void)
 {
+  uint32_t uuid;
+
+  uuid = HAL_GetUIDw0();
+
+  addr[2] = (uuid >>  0) & 0xFF;
+  addr[3] = (uuid >>  8) & 0xFF;
+  addr[4] = (uuid >> 16) & 0xFF;
+  addr[5] = (uuid >> 24) & 0xFF;
+
   // setup BTstack memory pools
   btstack_memory_init();
 
@@ -55,6 +66,7 @@ void btstackPortInit(void)
   // init HCI
   hci_transport_t  *transport = (hci_transport_t  *)hci_transport_h4_instance(btstack_uart_block_embedded_instance());
   hci_init(transport, &config);
+  hci_set_bd_addr(addr);
   hci_set_chipset(btstack_chipset_bcm_instance());
   btstack_chipset_bcm_enable_init_script(false);
 
