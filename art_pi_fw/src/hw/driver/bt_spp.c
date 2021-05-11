@@ -19,6 +19,8 @@
 
 #include "btstack.h"
 #include "btstack_tlv_lfs.h"
+#include "classic/btstack_link_key_db_tlv.h"
+
 
 #define HEARTBEAT_PERIOD_MS   500
 #define TEST_COD              0x1234
@@ -42,14 +44,13 @@ static uint8_t wr_buf[1024];
 
 static qbuffer_t q_rx;
 static qbuffer_t q_tx;
-
+static bool req_send = false;
 
 #define TLV_DB_PATH_PREFIX "btstack_"
 #define TLV_DB_PATH_POSTFIX ".tlv"
 static char tlv_db_path[100];
 static const btstack_tlv_t * tlv_impl;
 static btstack_tlv_lfs_t     tlv_context;
-static bd_addr_t             local_addr;
 
 
 
@@ -93,6 +94,14 @@ bool btSppExcute(void)
 
   btstackPortExecute();
 
+  if (is_open == true)
+  {
+    if (qbufferAvailable(&q_tx) > 0 && req_send == false)
+    {
+      req_send = true;
+      rfcomm_request_can_send_now_event(rfcomm_channel_id);
+    }
+  }
   return true;
 }
 
@@ -254,12 +263,8 @@ void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uin
           {
             qbufferRead(&q_tx, &wr_buf[0], tx_len);
             rfcomm_send(rfcomm_channel_id, wr_buf, tx_len);
+            req_send = false;
           }
-          else
-          {
-            rfcomm_send(rfcomm_channel_id, NULL, 0);
-          }
-          rfcomm_request_can_send_now_event(rfcomm_channel_id);
           break;
 
         default:
