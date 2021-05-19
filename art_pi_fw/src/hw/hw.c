@@ -41,6 +41,9 @@ void hwInit(void)
 
   lcdInit();
   btSppInit();
+  usbInit();
+  usbBegin(USB_CDC_MODE);
+
 
   logPrintf("\n");
 }

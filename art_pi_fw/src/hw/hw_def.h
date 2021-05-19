@@ -83,6 +83,12 @@
 #define _USE_HW_FS
 #define      HW_FS_MAX_SIZE         4*1024*1024
 
+#define _USE_HW_USB
+#define _USE_HW_CDC
+#define      HW_USE_CDC             1
+#define      HW_USE_MSC             0
+
+
 
 #define _PIN_GPIO_SDCARD_DETECT     0
 #define _PIN_GPIO_SPI_FLASH_CS      4

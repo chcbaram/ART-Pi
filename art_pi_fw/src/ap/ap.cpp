@@ -38,6 +38,16 @@ void apMain(void)
       ledToggle(_DEF_LED1);
     }
 
+    if (cdcAvailable() > 0)
+    {
+      uint8_t rx_data;
+
+      rx_data = cdcRead();
+
+      logPrintf("RxUSB : 0x%X\n", rx_data);
+    }
+
+
     sd_state_t sd_state;
 
     sd_state = sdUpdate();

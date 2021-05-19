@@ -34,6 +34,9 @@ extern "C" {
 #include "spi_flash.h"
 #include "fs.h"
 #include "bt_spp.h"
+#include "cdc.h"
+#include "usb.h"
+
 
 
 void hwInit(void);
