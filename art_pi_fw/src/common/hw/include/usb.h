@@ -24,10 +24,10 @@ typedef enum
 
 
 
-
 bool usbInit(void);
 bool usbBegin(UsbMode usb_mode);
 void usbDeInit(void);
+
 
 UsbMode usbGetMode(void);
 

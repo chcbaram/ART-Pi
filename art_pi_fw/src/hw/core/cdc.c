@@ -12,11 +12,9 @@
 
 
 #ifdef _USE_HW_CDC
+#include "usb/usb_cdc/usbd_cdc_if.h"
 
 
-extern bool     cdcIfInit(void);
-extern uint32_t cdcIfAvailable(void);
-extern uint8_t  cdcIfRead(void);
 
 
 static bool is_init = false;
@@ -50,12 +48,12 @@ uint8_t cdcRead(void)
 
 uint32_t cdcWrite(uint8_t *p_data, uint32_t length)
 {
-  return 0;
+  return cdcIfWrite(p_data, length);
 }
 
 uint32_t cdcGetBaud(void)
 {
-  return 0;
+  return cdcIfGetBaud();
 }
 
 #endif

@@ -25,6 +25,16 @@
 
 
 
+
+USBD_CDC_LineCodingTypeDef LineCoding =
+    {
+        115200,
+        0x00,
+        0x00,
+        0x08
+    };
+
+
 uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
@@ -36,6 +46,8 @@ static qbuffer_t q_tx;
 static uint8_t q_rx_buf[2048];
 static uint8_t q_tx_buf[2048];
 
+static volatile bool is_opened = false;
+static bool is_rx_full = false;
 
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
@@ -83,8 +95,114 @@ uint8_t cdcIfRead(void)
   return ret;
 }
 
+uint32_t cdcIfWrite(uint8_t *p_data, uint32_t length)
+{
+  uint32_t pre_time;
+  uint32_t tx_len;
+  uint32_t buf_len;
+  uint32_t sent_len;
 
 
+  sent_len = 0;
+
+  pre_time = millis();
+  while(sent_len < length)
+  {
+    buf_len = (q_tx.len - qbufferAvailable(&q_tx)) - 1;
+    tx_len = length;
+
+    if (tx_len > buf_len)
+    {
+      tx_len = buf_len;
+    }
+
+    if (tx_len > 0)
+    {
+      qbufferWrite(&q_tx, p_data, tx_len);
+      p_data += tx_len;
+      sent_len += tx_len;
+    }
+
+    if (millis()-pre_time >= 100)
+    {
+      break;
+    }
+  }
+
+  return sent_len;
+}
+
+uint32_t cdcIfGetBaud(void)
+{
+  return LineCoding.bitrate;
+}
+
+bool cdcIfIsConnected(void)
+{
+  if (hUsbDeviceFS.pClassData == NULL)
+  {
+    return false;
+  }
+  if (is_opened == false)
+  {
+    return false;
+  }
+  if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+
+uint8_t CDC_SoF_ISR(struct _USBD_HandleTypeDef *pdev)
+{
+
+  //-- RX
+  //
+  if (is_rx_full)
+  {
+    uint32_t buf_len;
+
+    buf_len = (q_rx.len - qbufferAvailable(&q_rx)) - 1;
+
+    if (buf_len >= CDC_DATA_FS_MAX_PACKET_SIZE)
+    {
+      USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &UserRxBufferFS[0]);
+      USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+      is_rx_full = false;
+    }
+  }
+
+
+  //-- TX
+  //
+  uint32_t tx_len;
+  tx_len = qbufferAvailable(&q_tx);
+
+  if (tx_len%CDC_DATA_FS_MAX_PACKET_SIZE == 0)
+  {
+    if (tx_len > 0)
+    {
+      tx_len = tx_len - 1;
+    }
+  }
+
+  if (tx_len > 0)
+  {
+    USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
+    if (hcdc->TxState == 0)
+    {
+      qbufferRead(&q_tx, UserTxBufferFS, tx_len);
+
+      USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, tx_len);
+      USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+    }
+  }
+
+  return 0;
+}
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -94,12 +212,13 @@ uint8_t cdcIfRead(void)
   */
 static int8_t CDC_Init_FS(void)
 {
-  /* USER CODE BEGIN 3 */
-  /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
+
+
+  is_opened = false;
+
   return (USBD_OK);
-  /* USER CODE END 3 */
 }
 
 /**
@@ -163,15 +282,27 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
-
+      LineCoding.bitrate   = (uint32_t)(pbuf[0]);
+      LineCoding.bitrate  |= (uint32_t)(pbuf[1]<<8);
+      LineCoding.bitrate  |= (uint32_t)(pbuf[2]<<16);
+      LineCoding.bitrate  |= (uint32_t)(pbuf[3]<<24);
+      LineCoding.format    = pbuf[4];
+      LineCoding.paritytype= pbuf[5];
+      LineCoding.datatype  = pbuf[6];
     break;
 
     case CDC_GET_LINE_CODING:
-
+      pbuf[0] = (uint8_t)(LineCoding.bitrate);
+      pbuf[1] = (uint8_t)(LineCoding.bitrate>>8);
+      pbuf[2] = (uint8_t)(LineCoding.bitrate>>16);
+      pbuf[3] = (uint8_t)(LineCoding.bitrate>>24);
+      pbuf[4] = LineCoding.format;
+      pbuf[5] = LineCoding.paritytype;
+      pbuf[6] = LineCoding.datatype;
     break;
 
     case CDC_SET_CONTROL_LINE_STATE:
-
+      is_opened = true;
     break;
 
     case CDC_SEND_BREAK:
@@ -206,8 +337,20 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   qbufferWrite(&q_rx, Buf, *Len);
 
 
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
-  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+  uint32_t buf_len;
+
+  buf_len = (q_rx.len - qbufferAvailable(&q_rx)) - 1;
+
+  if (buf_len >= CDC_DATA_FS_MAX_PACKET_SIZE)
+  {
+    USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+    USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+  }
+  else
+  {
+    is_rx_full = true;
+  }
+
   return (USBD_OK);
 }
 

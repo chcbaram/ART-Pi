@@ -38,13 +38,13 @@ void apMain(void)
       ledToggle(_DEF_LED1);
     }
 
-    if (cdcAvailable() > 0)
+    while(uartAvailable(_DEF_UART4) > 0)
     {
       uint8_t rx_data;
 
-      rx_data = cdcRead();
+      rx_data = uartRead(_DEF_UART4);
 
-      logPrintf("RxUSB : 0x%X\n", rx_data);
+      uartPrintf(_DEF_UART4, "RxUSB : 0x%X(%c)\n", rx_data, rx_data);
     }
 
 
@@ -66,6 +66,7 @@ void apMain(void)
 
 
 
+extern "C" bool cdcIfIsConnected(void);
 
 void cliTest(cli_args_t *args)
 {
@@ -113,6 +114,16 @@ void cliTest(cli_args_t *args)
 
         uartPrintf(_DEF_UART3, "RxData : 0x%X(%c)\n", rx_data, rx_data);
       }
+    }
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "usb") == true)
+  {
+    while(cliKeepLoop())
+    {
+      cliPrintf("USB Connect : %d\r", cdcIfIsConnected());
+      delay(100);
     }
     ret = true;
   }

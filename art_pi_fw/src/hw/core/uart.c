@@ -4,7 +4,20 @@
  *  Created on: Apr 19, 2021
  *      Author: baram
  */
-
+/*
+ *
+ * _DEF_UART1
+ *      UART4
+ *
+ * _DEF_UART2
+ *      USART3
+ *
+ * _DEF_UART3
+ *      BT_SPP
+ *
+ * _DEF_UART4
+ *      USB CDC
+ */
 
 
 
@@ -161,7 +174,15 @@ bool uartOpen(uint8_t ch, uint32_t baud)
 
     case _DEF_UART3:
       uart_tbl[ch].type    = UART_HW_TYPE_BT_SPP;
-      uart_tbl[ch].baud      = baud;
+      uart_tbl[ch].baud    = baud;
+      uart_tbl[ch].is_open = true;
+
+      ret = true;
+      break;
+
+    case _DEF_UART4:
+      uart_tbl[ch].type    = UART_HW_TYPE_USB;
+      uart_tbl[ch].baud    = baud;
       uart_tbl[ch].is_open = true;
 
       ret = true;
@@ -190,6 +211,10 @@ uint32_t uartAvailable(uint8_t ch)
 
     case _DEF_UART3:
       ret = btSppAvailable();
+      break;
+
+    case _DEF_UART4:
+      ret = cdcAvailable();
       break;
   }
 
@@ -227,6 +252,10 @@ uint8_t uartRead(uint8_t ch)
     case _DEF_UART3:
       ret = btSppRead();
       break;
+
+    case _DEF_UART4:
+      ret = cdcRead();
+      break;
   }
 
   return ret;
@@ -248,6 +277,10 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
 
     case _DEF_UART3:
       ret = btSppWrite(p_data, length);
+      break;
+
+    case _DEF_UART4:
+      ret = cdcWrite(p_data, length);
       break;
   }
 
