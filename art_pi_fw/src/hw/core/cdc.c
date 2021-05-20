@@ -36,6 +36,11 @@ bool cdcIsInit(void)
   return is_init;
 }
 
+bool cdcIsConnect(void)
+{
+  return cdcIfIsConnected();
+}
+
 uint32_t cdcAvailable(void)
 {
   return cdcIfAvailable();

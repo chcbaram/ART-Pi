@@ -34,12 +34,20 @@ extern USBD_DescriptorsTypeDef CDC_Desc;
 extern USBD_DescriptorsTypeDef MSC_Desc;
 
 
+#ifdef _USE_HW_CLI
+static void cliCmd(cli_args_t *args);
+#endif
+
+
+
 bool usbInit(void)
 {
   bool ret = true;
 
 
-
+#ifdef _USE_HW_CLI
+  cliAdd("usb", cliCmd);
+#endif
   return ret;
 }
 
@@ -50,6 +58,30 @@ void usbDeInit(void)
     USBD_DeInit(&hUsbDeviceFS);
   }
 }
+
+bool usbIsOpen(void)
+{
+  return cdcIsConnect();
+}
+
+bool usbIsConnect(void)
+{
+  if (hUsbDeviceFS.pClassData == NULL)
+  {
+    return false;
+  }
+  if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+  {
+    return false;
+  }
+  if (hUsbDeviceFS.dev_config == 0)
+  {
+    return false;
+  }
+
+  return true;
+}
+
 
 UsbMode usbGetMode(void)
 {
@@ -123,6 +155,86 @@ bool usbBegin(UsbMode usb_mode)
 
   return ret;
 }
+
+
+
+#ifdef _USE_HW_CLI
+void cliCmd(cli_args_t *args)
+{
+  bool ret = false;
+
+  if (args->argc == 1 && args->isStr(0, "info") == true)
+  {
+    while(cliKeepLoop())
+    {
+      cliPrintf("USB Connect : %d\n", usbIsConnect());
+      cliPrintf("USB Open    : %d\n", usbIsOpen());
+      cliPrintf("\x1B[%dA", 2);
+      delay(100);
+    }
+    cliPrintf("\x1B[%dB", 2);
+
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "tx") == true)
+  {
+    uint32_t pre_time;
+    uint32_t tx_cnt = 0;
+
+    while(cliKeepLoop())
+    {
+      if (millis()-pre_time >= 1000)
+      {
+        pre_time = millis();
+        logPrintf("tx : %d KB/s\n", tx_cnt/1024);
+        tx_cnt = 0;
+      }
+      cdcWrite((uint8_t *)"123456789012345678901234567890\n", 31);
+      tx_cnt += 31;
+    }
+    cliPrintf("\x1B[%dB", 2);
+
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "rx") == true)
+  {
+    uint32_t pre_time;
+    uint32_t rx_cnt = 0;
+    uint32_t rx_len;
+
+    while(cliKeepLoop())
+    {
+      if (millis()-pre_time >= 1000)
+      {
+        pre_time = millis();
+        logPrintf("rx : %d KB/s\n", rx_cnt/1024);
+        rx_cnt = 0;
+      }
+
+      rx_len = cdcAvailable();
+
+      for (int i=0; i<rx_len; i++)
+      {
+        cdcRead();
+      }
+
+      rx_cnt += rx_len;
+    }
+    cliPrintf("\x1B[%dB", 2);
+
+    ret = true;
+  }
+
+  if (ret == false)
+  {
+    cliPrintf("usb info\n");
+    cliPrintf("usb tx\n");
+    cliPrintf("usb rx\n");
+  }
+}
+#endif
 
 
 #endif

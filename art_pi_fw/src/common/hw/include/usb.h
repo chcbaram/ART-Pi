@@ -27,7 +27,8 @@ typedef enum
 bool usbInit(void);
 bool usbBegin(UsbMode usb_mode);
 void usbDeInit(void);
-
+bool usbIsOpen(void);
+bool usbIsConnect(void);
 
 UsbMode usbGetMode(void);
 

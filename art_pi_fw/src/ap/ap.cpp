@@ -38,15 +38,6 @@ void apMain(void)
       ledToggle(_DEF_LED1);
     }
 
-    while(uartAvailable(_DEF_UART4) > 0)
-    {
-      uint8_t rx_data;
-
-      rx_data = uartRead(_DEF_UART4);
-
-      uartPrintf(_DEF_UART4, "RxUSB : 0x%X(%c)\n", rx_data, rx_data);
-    }
-
 
     sd_state_t sd_state;
 
@@ -65,8 +56,6 @@ void apMain(void)
 
 
 
-
-extern "C" bool cdcIfIsConnected(void);
 
 void cliTest(cli_args_t *args)
 {
@@ -122,9 +111,33 @@ void cliTest(cli_args_t *args)
   {
     while(cliKeepLoop())
     {
-      cliPrintf("USB Connect : %d\r", cdcIfIsConnected());
+      cliPrintf("USB Connect : %d\n", usbIsConnect());
+      cliPrintf("USB Open    : %d\n", usbIsOpen());
+      cliPrintf("\x1B[%dA", 2);
       delay(100);
     }
+    cliPrintf("\x1B[%dB", 2);
+
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "usb_tx") == true)
+  {
+    uint32_t pre_time;
+    uint32_t tx_cnt = 0;
+    while(cliKeepLoop())
+    {
+      if (millis()-pre_time >= 1000)
+      {
+        pre_time = millis();
+        logPrintf("tx : %d KB/s\n", tx_cnt/1024);
+        tx_cnt = 0;
+      }
+      uartPrintf(_DEF_UART4, "123456789012345678901234567890\n");
+      tx_cnt += 31;
+    }
+    cliPrintf("\x1B[%dB", 2);
+
     ret = true;
   }
 
@@ -132,6 +145,7 @@ void cliTest(cli_args_t *args)
   {
     cliPrintf("test hci\n");
     cliPrintf("test bt_spp\n");
+    cliPrintf("test usb\n");
   }
 }
 

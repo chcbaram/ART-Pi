@@ -46,7 +46,7 @@ static qbuffer_t q_tx;
 static uint8_t q_rx_buf[2048];
 static uint8_t q_tx_buf[2048];
 
-static volatile bool is_opened = false;
+static bool is_opened = false;
 static bool is_rx_full = false;
 
 
@@ -58,6 +58,7 @@ static int8_t CDC_DeInit_FS(void);
 static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t CDC_Receive_FS(uint8_t* pbuf, uint32_t *Len);
 static int8_t CDC_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
+
 
 
 
@@ -75,6 +76,7 @@ USBD_CDC_ItfTypeDef USBD_Interface_fops_FS =
 
 bool cdcIfInit(void)
 {
+  is_opened = false;
   qbufferCreate(&q_rx, q_rx_buf, 2048);
   qbufferCreate(&q_tx, q_tx_buf, 2048);
 
@@ -103,6 +105,9 @@ uint32_t cdcIfWrite(uint8_t *p_data, uint32_t length)
   uint32_t sent_len;
 
 
+  if (cdcIfIsConnected() != true) return 0;
+
+
   sent_len = 0;
 
   pre_time = millis();
@@ -121,6 +126,11 @@ uint32_t cdcIfWrite(uint8_t *p_data, uint32_t length)
       qbufferWrite(&q_tx, p_data, tx_len);
       p_data += tx_len;
       sent_len += tx_len;
+    }
+
+    if (cdcIfIsConnected() != true)
+    {
+      break;
     }
 
     if (millis()-pre_time >= 100)
@@ -148,6 +158,10 @@ bool cdcIfIsConnected(void)
     return false;
   }
   if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+  {
+    return false;
+  }
+  if (hUsbDeviceFS.dev_config == 0)
   {
     return false;
   }
@@ -227,9 +241,9 @@ static int8_t CDC_Init_FS(void)
   */
 static int8_t CDC_DeInit_FS(void)
 {
-  /* USER CODE BEGIN 4 */
+  is_opened = false;
+
   return (USBD_OK);
-  /* USER CODE END 4 */
 }
 
 /**
@@ -241,7 +255,8 @@ static int8_t CDC_DeInit_FS(void)
   */
 static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 {
-  /* USER CODE BEGIN 5 */
+  USBD_SetupReqTypedef *req = (USBD_SetupReqTypedef *)pbuf;
+
   switch(cmd)
   {
     case CDC_SEND_ENCAPSULATED_COMMAND:
@@ -302,7 +317,7 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
     break;
 
     case CDC_SET_CONTROL_LINE_STATE:
-      is_opened = true;
+      is_opened = req->wValue&0x01;
     break;
 
     case CDC_SEND_BREAK:
