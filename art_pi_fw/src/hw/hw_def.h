@@ -24,6 +24,7 @@
 #define _HW_DEF_RTOS_THREAD_PRI_DISPLAY       osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_EVENT         osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_BTSTACK       osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_TOUCHGFX      osPriorityNormal
 
 
 #define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
@@ -33,7 +34,7 @@
 #define _HW_DEF_RTOS_THREAD_MEM_DISPLAY       _HW_DEF_RTOS_MEM_SIZE( 6*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_EVENT         _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_BTSTACK       _HW_DEF_RTOS_MEM_SIZE( 2*1024)
-
+#define _HW_DEF_RTOS_THREAD_MEM_TOUCHGFX      _HW_DEF_RTOS_MEM_SIZE( 8*1024)
 
 
 
@@ -87,6 +88,10 @@
 #define _USE_HW_CDC
 #define      HW_USE_CDC             1
 #define      HW_USE_MSC             0
+
+#define _USE_HW_TOUCHGFX
+#define      HW_TOUCHGFX_WIDTH      HW_LCD_WIDTH
+#define      HW_TOUCHGFX_HEIGHT     HW_LCD_HEIGHT
 
 
 

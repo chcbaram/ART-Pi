@@ -59,6 +59,8 @@
 extern SD_HandleTypeDef hsd1;
 extern DMA_HandleTypeDef hdma_uart4_rx;
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+extern DMA2D_HandleTypeDef hdma2d;
+
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -259,6 +261,11 @@ void OTG_FS_IRQHandler(void)
   /* USER CODE BEGIN OTG_FS_IRQn 1 */
 
   /* USER CODE END OTG_FS_IRQn 1 */
+}
+
+void DMA2D_IRQHandler(void)
+{
+  HAL_DMA2D_IRQHandler(&hdma2d);
 }
 
 /* USER CODE BEGIN 1 */

@@ -10,7 +10,7 @@
 
 #include "rtos.h"
 #include "bsp.h"
-
+#include "hw_def.h"
 
 
 
@@ -19,6 +19,7 @@ void rtosInit(void)
 
 }
 
+#ifndef _USE_HW_TOUCHGFX
 void vApplicationStackOverflowHook(xTaskHandle xTask,
                                    signed portCHAR* pcTaskName)
 {
@@ -32,7 +33,7 @@ void vApplicationMallocFailedHook(xTaskHandle xTask,
   logPrintf("MallocFailed : %s\r\n", pcTaskName);
   while (1);
 }
-
+#endif
 
 
 

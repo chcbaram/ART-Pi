@@ -10,7 +10,7 @@
 
 #include "ap.h"
 #include "thread/thread.h"
-
+#include "TouchGFX/app/touchgfx.h"
 
 
 void cliTest(cli_args_t *args);
@@ -23,6 +23,10 @@ void apInit(void)
   cliAdd("test", cliTest);
 
   threadInit();
+
+#ifdef _USE_HW_TOUCHGFX
+  touchgfxInit();
+#endif
 }
 
 void apMain(void)

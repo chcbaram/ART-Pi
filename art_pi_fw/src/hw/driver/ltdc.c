@@ -65,7 +65,12 @@ static volatile bool is_double_buffer = false;
 uint16_t *ltdc_draw_buffer;
 
 
+DMA2D_HandleTypeDef hdma2d;
+CRC_HandleTypeDef hcrc;
 
+
+static void dma2dInit(void);
+static void crcInit(void);
 
 
 
@@ -158,8 +163,11 @@ bool ltdcInit(void)
   NVIC_EnableIRQ(LTDC_IRQn);
 
 
-
   ltdcRequestDraw();
+
+  dma2dInit();
+  crcInit();
+
   return ret;
 }
 
@@ -350,7 +358,7 @@ void LTDC_IRQHandler(void)
   HAL_LTDC_IRQHandler(&hltdc);
 }
 
-
+#ifndef _USE_HW_TOUCHGFX
 void HAL_LTDC_LineEvenCallback(LTDC_HandleTypeDef* hltdc)
 {
   static uint8_t update = 0;
@@ -370,7 +378,7 @@ void HAL_LTDC_LineEvenCallback(LTDC_HandleTypeDef* hltdc)
     HAL_LTDC_ProgramLineEvent(hltdc, lcd_int_active_line);
   }
 }
-
+#endif
 
 
 /** @defgroup HAL_MSP_Private_Functions
@@ -530,5 +538,97 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef *hltdc)
   HAL_NVIC_DisableIRQ(LTDC_IRQn);
 }
 
+
+
+void dma2dInit(void)
+{
+
+  hdma2d.Instance = DMA2D;
+  hdma2d.Init.Mode = DMA2D_M2M;
+  hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB565;
+  hdma2d.Init.OutputOffset = 0;
+  hdma2d.Init.BytesSwap = DMA2D_BYTES_REGULAR;
+  hdma2d.Init.LineOffsetMode = DMA2D_LOM_PIXELS;
+  hdma2d.LayerCfg[1].InputOffset = 0;
+  hdma2d.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB565;
+  hdma2d.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d.LayerCfg[1].InputAlpha = 0;
+  hdma2d.LayerCfg[1].AlphaInverted = DMA2D_REGULAR_ALPHA;
+  hdma2d.LayerCfg[1].RedBlueSwap = DMA2D_RB_REGULAR;
+  hdma2d.LayerCfg[1].ChromaSubSampling = DMA2D_NO_CSS;
+  if (HAL_DMA2D_Init(&hdma2d) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DMA2D_ConfigLayer(&hdma2d, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
+void HAL_DMA2D_MspInit(DMA2D_HandleTypeDef* dma2dHandle)
+{
+
+  if(dma2dHandle->Instance==DMA2D)
+  {
+    /* DMA2D clock enable */
+    __HAL_RCC_DMA2D_CLK_ENABLE();
+
+    /* DMA2D interrupt Init */
+    HAL_NVIC_SetPriority(DMA2D_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA2D_IRQn);
+  }
+}
+
+void HAL_DMA2D_MspDeInit(DMA2D_HandleTypeDef* dma2dHandle)
+{
+
+  if(dma2dHandle->Instance==DMA2D)
+  {
+    /* Peripheral clock disable */
+    __HAL_RCC_DMA2D_CLK_DISABLE();
+
+    /* DMA2D interrupt Deinit */
+    HAL_NVIC_DisableIRQ(DMA2D_IRQn);
+  }
+}
+
+
+void crcInit(void)
+{
+
+  hcrc.Instance = CRC;
+  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
+void HAL_CRC_MspInit(CRC_HandleTypeDef* crcHandle)
+{
+
+  if(crcHandle->Instance==CRC)
+  {
+    /* CRC clock enable */
+    __HAL_RCC_CRC_CLK_ENABLE();
+  }
+}
+
+void HAL_CRC_MspDeInit(CRC_HandleTypeDef* crcHandle)
+{
+
+  if(crcHandle->Instance==CRC)
+  {
+    /* Peripheral clock disable */
+    __HAL_RCC_CRC_CLK_DISABLE();
+  }
+}
 
 #endif
