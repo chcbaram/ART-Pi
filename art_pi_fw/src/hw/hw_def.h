@@ -89,7 +89,7 @@
 #define      HW_USE_CDC             1
 #define      HW_USE_MSC             0
 
-#define _USE_HW_TOUCHGFX
+//#define _USE_HW_TOUCHGFX
 #define      HW_TOUCHGFX_WIDTH      HW_LCD_WIDTH
 #define      HW_TOUCHGFX_HEIGHT     HW_LCD_HEIGHT
 
