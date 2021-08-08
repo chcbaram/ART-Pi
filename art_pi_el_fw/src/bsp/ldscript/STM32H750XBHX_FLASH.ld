@@ -76,7 +76,7 @@ SECTIONS
 
     .Dev_info :
   {
-	KEEP(src/ap/Dev_Inf.o ( .rodata ))
+	KEEP(*(.Dev_info ))
   } :SgInfo
   
   /* Constant data goes into FLASH */
